@@ -59,11 +59,6 @@ make -j$(nproc --all) O=out \
                       CROSS_COMPILE_ARM32=arm-eabi- \
 			CROSS_COMPILE=aarch64-elf- \
 			LD=aarch64-elf-ld.lld \
-			AR=llvm-ar \
-			NM=llvm-nm \
-			OBJCOPY=llvm-objcopy \
-			OBJDUMP=llvm-objdump \
-			CC=aarch64-elf-gcc \
 			STRIP=llvm-strip \
                       CONFIG_NO_ERROR_ON_MISMATCH=y
 
