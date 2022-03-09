@@ -8,8 +8,8 @@ IMAGE=$(pwd)/out/arch/arm64/boot/Image.gz-dtb
 TANGGAL=$(date +"%F-%S")
 START=$(date +"%s")
 KERNEL_DIR=$(pwd)
-PATH="${PWD}/gcc/bin:${PATH}:${PWD}/gcc64/bin:/usr/bin:$PATH" \
-export KBUILD_COMPILER_STRING="$(${KERNEL_DIR}/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
+PATH="${PWD}/usr/bin:${PATH}:${PWD}/gcc64/bin:/gcc/bin:$PATH" \
+export KBUILD_COMPILER_STRING="$(${KERNEL_DIR}/usr/bin/gcc --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 export ARCH=arm64
 export KBUILD_BUILD_HOST=ThunderStorm
 export KBUILD_BUILD_USER="AnupamRoy"
@@ -56,10 +56,10 @@ function compile() {
 [ -d "out" ] && rm -rf out || mkdir -p out
 make O=out ARCH=arm64 RMX2151_defconfig
 make -j$(nproc --all) O=out \
+                      CROSS_COMPILE=aarch64-elf- \
                       CROSS_COMPILE_ARM32=arm-eabi- \
-			CROSS_COMPILE=aarch64-elf- \
-			LD=aarch64-elf-ld.lld \
-			STRIP=llvm-strip \
+                      LD=aarch64-elf-ld.lld \
+                      STRIP=llvm-strip \
                       CONFIG_NO_ERROR_ON_MISMATCH=y
 
     if ! [ -a "$IMAGE" ]; then
