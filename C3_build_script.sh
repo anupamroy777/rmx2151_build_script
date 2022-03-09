@@ -1,15 +1,14 @@
 #!/usr/bin/env bash
 echo "Cloning dependencies"
 rm -rf AnyKernel
-git clone --depth=1 https://github.com/sarthakroy2002/android_prebuilts_clang_host_linux-x86_clang-6443078 clang
-git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-linux-android-4.9 los-4.9-64
-git clone --depth=1 https://github.com/LineageOS/android_prebuilts_gcc_linux-x86_arm_arm-linux-androideabi-4.9 los-4.9-32
+git clone --depth=1 https://github.com/StatiXOS/android_prebuilts_gcc_linux-x86_arm_arm-eabi gcc
+git clone --depth=1 https://github.com/StatiXOS/android_prebuilts_gcc_linux-x86_aarch64_aarch64-elf gcc64
 echo "Done"
 IMAGE=$(pwd)/out/arch/arm64/boot/Image.gz-dtb
 TANGGAL=$(date +"%F-%S")
 START=$(date +"%s")
 KERNEL_DIR=$(pwd)
-PATH="${PWD}/clang/bin:${PATH}:${PWD}/los-4.9-32/bin:${PATH}:${PWD}/los-4.9-64/bin:${PATH}" \
+PATH="${PWD}/gcc/bin:${PATH}:${PWD}/gcc64/bin:/usr/bin:$PATH" \
 export KBUILD_COMPILER_STRING="$(${KERNEL_DIR}/clang/bin/clang --version | head -n 1 | perl -pe 's/\(http.*?\)//gs' | sed -e 's/  */ /g')"
 export ARCH=arm64
 export KBUILD_BUILD_HOST=ThunderStorm
@@ -57,11 +56,15 @@ function compile() {
 [ -d "out" ] && rm -rf out || mkdir -p out
 make O=out ARCH=arm64 RMX2151_defconfig
 make -j$(nproc --all) O=out \
-                      ARCH=arm64 \
-		      CC="clang" \
-                      CLANG_TRIPLE=aarch64-linux-gnu- \
-                      CROSS_COMPILE="${PWD}/los-4.9-64/bin/aarch64-linux-android-" \
-                      CROSS_COMPILE_ARM32="${PWD}/los-4.9-32/bin/arm-linux-androideabi-" \
+                      CROSS_COMPILE_ARM32=arm-eabi- \
+			CROSS_COMPILE=aarch64-elf- \
+			LD=aarch64-elf-ld.lld \
+			AR=llvm-ar \
+			NM=llvm-nm \
+			OBJCOPY=llvm-objcopy \
+			OBJDUMP=llvm-objdump \
+			CC=aarch64-elf-gcc \
+			STRIP=llvm-strip \
                       CONFIG_NO_ERROR_ON_MISMATCH=y
 
     if ! [ -a "$IMAGE" ]; then
