@@ -58,7 +58,7 @@ function compile() {
 make O=out ARCH=arm64 RMX2151_defconfig
 make -j$(nproc --all) O=out \
                       ARCH=arm64 \
-		      CC="clang" \
+                      CC="clang" \
                       CLANG_TRIPLE=aarch64-linux-gnu- \
                       CROSS_COMPILE="${PWD}/los-4.9-64/bin/aarch64-linux-android-" \
                       CROSS_COMPILE_ARM32="${PWD}/los-4.9-32/bin/arm-linux-androideabi-" \
